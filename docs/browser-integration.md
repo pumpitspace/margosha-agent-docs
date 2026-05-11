@@ -55,14 +55,20 @@ Check Hermes browser tool:
 - Navigate to a simple page.
 - Confirm title and accessibility snapshot are returned.
 
-## Next hardening step
+## Persistent service
 
-The CDP Chrome process is currently started as a tracked background process. For maximum persistence, promote it to a user LaunchAgent similar to the keep-awake service:
+CDP Chrome is promoted to a user LaunchAgent so browser automation survives agent restarts:
 
+- Plist: `~/Library/LaunchAgents/com.hermes.chrome-cdp.plist`
 - Label: `com.hermes.chrome-cdp`
 - Program: Google Chrome binary
 - Arguments: remote debugging port, dedicated profile, no-first-run
 - KeepAlive: true
-- Logs: `~/.hermes/logs/chrome-cdp.log`
+- Logs: `~/.hermes/logs/chrome-cdp.log` and `~/.hermes/logs/chrome-cdp.error.log`
 
-This makes browser automation survive agent restarts more reliably.
+Service check:
+
+```bash
+launchctl print gui/$(id -u)/com.hermes.chrome-cdp
+curl -fsS http://127.0.0.1:9222/json/version
+```
